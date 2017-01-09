@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LibP2P.KBucket")]
-[assembly: AssemblyDescription("dht kbucket")]
+[assembly: AssemblyTitle("LibP2P.KBucket.Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("tabrath")]
-[assembly: AssemblyProduct("LibP2P.KBucket")]
-[assembly: AssemblyCopyright("Copyright © tabrath 2016")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("LibP2P.KBucket.Tests")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c859e2b3-0994-43a6-b1e9-7a07bd1c9c00")]
+[assembly: Guid("0873dab3-91a3-4737-af2b-617f45fc01dd")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,7 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.1.0")]
-[assembly: AssemblyFileVersion("0.0.1.0")]
-[assembly: AssemblyInformationalVersion("0.0.1")]
-[assembly: InternalsVisibleTo("LibP2P.KBucket.Tests")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
