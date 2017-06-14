@@ -9,7 +9,7 @@
 [![Libraries.io](https://img.shields.io/librariesio/github/tabrath/cs-libp2p-kbucket.svg?style=flat-square)](https://libraries.io/github/tabrath/cs-libp2p-kbucket)
 [![Codecov](https://img.shields.io/codecov/c/github/tabrath/cs-libp2p-kbucket/master.svg?style=flat-square)](https://codecov.io/gh/tabrath/cs-libp2p-kbucket)
 
->KBucket used in C# LibP2P.
+> KBucket used in C# LibP2P. .NET Standard 1.6.
 
 ## Table of Contents
 
@@ -22,6 +22,11 @@
 ## Install
 
     PM> Install-Package LibP2P.KBucket
+
+--
+
+    dotnet add package LibP2P.KBucket
+
 
 ## Usage
 
@@ -41,4 +46,4 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT](LICENSE) © 2016 Trond Bråthen
+[MIT](LICENSE) ï¿½ 2016 Trond Brï¿½then

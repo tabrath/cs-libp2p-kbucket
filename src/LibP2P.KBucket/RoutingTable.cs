@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using LibP2P.Peer;
 using LibP2P.Peer.Store;
+using LibP2P.Utilities.Extensions;
 
 namespace LibP2P.KBucket
 {
     public class RoutingTable
     {
         private readonly DhtId _local;
-        private readonly object _tabLock;
+        private readonly ReaderWriterLockSlim _rwLock;
         private readonly IMetrics _metrics;
         private readonly TimeSpan _maxLatency;
         private readonly int _bucketSize;
 
         public Bucket[] Buckets { get; }
+        public int Size => _rwLock.Read(() => Buckets.Sum(b => b.Length));
+        public PeerId[] Peers => _rwLock.Read(() => Buckets.SelectMany(b => b.Peers).ToArray());
 
         public RoutingTable(int bucketSize, DhtId localId, TimeSpan latency, IMetrics metrics)
         {
@@ -25,14 +26,14 @@ namespace LibP2P.KBucket
             _local = localId;
             _maxLatency = latency;
             _metrics = metrics;
-            _tabLock = new object();
+            _rwLock = new ReaderWriterLockSlim();
         }
 
         public void Update(PeerId p)
         {
             var peerId = DhtId.ConvertPeerId(p);
             var cpl = DhtId.CommonPrefixLength(peerId, _local);
-            lock (_tabLock)
+            _rwLock.Write(() =>
             {
                 var bucketId = cpl;
                 if (bucketId >= Buckets.Length)
@@ -61,12 +62,12 @@ namespace LibP2P.KBucket
                         bucket.PopBack();
                     }
                 }
-            }
+            });
         }
 
         public void Remove(PeerId p)
         {
-            lock (_tabLock)
+            _rwLock.Write(() =>
             {
                 var peerId = DhtId.ConvertPeerId(p);
                 var cpl = DhtId.CommonPrefixLength(peerId, _local);
@@ -77,7 +78,7 @@ namespace LibP2P.KBucket
 
                 var bucket = Buckets[bucketId];
                 bucket.Remove(p);
-            }
+            });
         }
 
         public PeerId NextBucket()
@@ -115,53 +116,31 @@ namespace LibP2P.KBucket
         {
             var cpl = DhtId.CommonPrefixLength(id, _local);
 
-            lock (_tabLock)
+            return _rwLock.Read(() =>
             {
                 if (cpl >= Buckets.Length)
                     cpl = Buckets.Length - 1;
 
                 var bucket = Buckets[cpl];
-                var peers = Util.CopyPeersFromList(id, bucket.Peers);
-                if (peers.Count() < count)
+                var peers = Util.CopyPeersFromList(id, bucket.Peers).ToArray();
+                if (peers.Length < count)
                 {
                     if (cpl > 0)
                     {
                         var plist = Buckets[cpl - 1].Peers;
-                        peers = Util.CopyPeersFromList(id, plist);
+                        peers = Util.CopyPeersFromList(id, plist).ToArray();
                     }
 
                     if (cpl < Buckets.Length - 1)
                     {
                         var plist = Buckets[cpl + 1].Peers;
-                        peers = Util.CopyPeersFromList(id, plist);
+                        peers = Util.CopyPeersFromList(id, plist).ToArray();
                     }
                 }
                 return peers.OrderBy(p => p.Distance, new Util.DistanceComparer())
                     .Take(count)
                     .Select(p => p.P).ToArray();
-            }
-        }
-
-        public int Size
-        {
-            get
-            {
-                lock (_tabLock)
-                {
-                    return Buckets.Sum(b => b.Length);
-                }
-            }
-        }
-
-        public PeerId[] Peers
-        {
-            get
-            {
-                lock (_tabLock)
-                {
-                    return Buckets.SelectMany(b => b.Peers).ToArray();
-                }
-            }
+            });
         }
     }
 }

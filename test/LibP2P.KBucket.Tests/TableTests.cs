@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LibP2P.Peer;
 using LibP2P.Peer.Store;
-using NUnit.Framework;
+using Xunit;
 
 namespace LibP2P.KBucket.Tests
 {
-    [TestFixture]
     public class TableTests
     {
-        [Test]
+        [Fact]
         public void TestBucket()
         {
             var b = new Bucket();
@@ -27,7 +24,7 @@ namespace LibP2P.KBucket.Tests
             var local = new PeerId($"Local PeerId");
             var localId = DhtId.ConvertPeerId(local);
             var x = new Random(Environment.TickCount).Next(peers.Length);
-            Assert.That(b.Has(peers[x]), Is.True);
+            Assert.True(b.Has(peers[x]));
 
             var spl = b.Split(0, DhtId.ConvertPeerId(local));
             var llist = b.Peers;
@@ -35,18 +32,18 @@ namespace LibP2P.KBucket.Tests
             {
                 var p = DhtId.ConvertPeerId(e);
                 var cpl = DhtId.CommonPrefixLength(p, localId);
-                Assert.That(cpl, Is.Not.GreaterThan(0));
+                Assert.False(cpl > 0);
             }
             var rlist = spl.Peers;
             foreach (var e in rlist)
             {
                 var p = DhtId.ConvertPeerId(e);
                 var cpl = DhtId.CommonPrefixLength(p, localId);
-                Assert.That(cpl, Is.Not.EqualTo(0));
+                Assert.NotEqual(0, cpl);
             }
         }
 
-        [Test]
+        [Fact]
         public void TestTableUpdate()
         {
             var local = new PeerId("Random Local Peer");
@@ -67,12 +64,12 @@ namespace LibP2P.KBucket.Tests
             {
                 var id = DhtId.ConvertPeerId(new PeerId($"Random Peer {rand.Next(1024)}"));
                 var ret = rt.NearestPeers(id, 5);
-                
-                Assert.That(ret.Length, Is.GreaterThan(0));
+
+                Assert.True(ret.Length > 0);
             }
         }
 
-        [Test]
+        [Fact]
         public void TestTableFind()
         {
             var local = new PeerId("Random Local Peer");
@@ -87,10 +84,10 @@ namespace LibP2P.KBucket.Tests
             }
 
             var found = rt.NearestPeer(DhtId.ConvertPeerId(peers[2]));
-            Assert.That(found, Is.EqualTo(peers[2]));
+            Assert.Equal(peers[2], found);
         }
 
-        [Test]
+        [Fact]
         public void TestTableFindMultiple()
         {
             var local = new PeerId("Random Local Peer");
@@ -105,10 +102,10 @@ namespace LibP2P.KBucket.Tests
             }
 
             var found = rt.NearestPeers(DhtId.ConvertPeerId(peers[2]), 15);
-            Assert.That(found.Length, Is.EqualTo(15));
+            Assert.Equal(15, found.Length);
         }
 
-        [Test]
+        [Fact]
         public void TestTableMultithreaded()
         {
             var local = new PeerId("Random Local Peer");
